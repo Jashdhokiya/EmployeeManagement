@@ -19,6 +19,7 @@ A simple **Employee Management System** with a **Spring Boot backend** and a **H
    ```sql
    CREATE DATABASE employees
 2. Update application properties
+   ```
    spring.datasource.url=jdbc:mysql://localhost:3306/employees
    spring.datasource.username=your_mysql_user
    spring.datasource.password=your_mysql_password   

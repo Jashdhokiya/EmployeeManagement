@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee Management</title>
+  <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+<h1>Employee Management System</h1>
+
+<form id="employeeForm">
+  <label for="employeeId">Employee ID:</label>
+  <input type="text" id="employeeId" name="employeeId" required>
+
+  <label for="name">Name:</label>
+  <input type="text" id="name" name="name" required>
+
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required>
+
+  <button type="submit">Add Employee</button>
+</form>
+
+<div id="responseMessage" class="response"></div>
+
+<h2>Employee List</h2>
+<div id="employeeList">
+  <button onclick="fetchEmployees()">Refresh Employee List</button>
+  <div id="employeeData"></div>
+</div>
+
+<script>
+  document.getElementById('employeeForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const formData = {
+      id: document.getElementById('employeeId').value,
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+    };
+
+    fetch('http://localhost:8080/api/employees', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+      .then(response => response.text())
+      .then(data => {
+        alert(data);
+        document.getElementById('employeeForm').reset();
+        fetchEmployees(); // Refresh the list of employees after adding
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  });
+
+  function fetchEmployees() {
+    fetch('http://localhost:8080/api/employees')
+      .then(response => response.json())
+      .then(data => {
+        const employeeList = document.getElementById('employeeData');
+        employeeList.innerHTML = '';
+
+        data.forEach(employee => {
+          employeeList.innerHTML += `
+                            <p>ID: ${employee.id}, Name: ${employee.name}, Email: ${employee.email}</p>
+                        `;
+        });
+      })
+      .catch((error) => {
+        displayMessage('Error fetching employee data: ' + error.message, false);
+      });
+  }
+
+  function displayMessage(message, isSuccess) {
+    const responseMessage = document.getElementById('responseMessage');
+    responseMessage.textContent = message;
+    responseMessage.className = 'response ' + (isSuccess ? 'success' : 'error');
+  }
+
+  // Initial load of employee data
+  fetchEmployees();
+</script>
+</body>
+</html>
